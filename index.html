@@ -16,15 +16,14 @@
     <div class="container">
         <!-- Основной контент -->
         <main id="main-content">
-            <article>
-                <h2>Первая статья</h2>
-                <p>Это пример первой статьи в моем блоге. Здесь вы можете написать все, что захотите.</p>
-            </article>
-
-            <article>
-                <h2>Вторая статья</h2>
-                <p>Вот еще одна статья, где вы можете делиться интересными фактами и историями.</p>
-            </article>
+            <section>
+                <h2>Последние статьи</h2>
+                <ul>
+                    <li><a href="article1.html">Первая статья</a></li>
+                    <li><a href="article2.html">Вторая статья</a></li>
+                    <!-- Добавляйте ссылки на новые статьи сюда -->
+                </ul>
+            </section>
         </main>
 
         <!-- Боковая панель -->
@@ -32,7 +31,6 @@
             <h3>Навигация</h3>
             <ul>
                 <li><a href="index.html">Главная</a></li>
-                <li><a href="#" onclick="addArticle()">Добавить статью</a></li>
                 <li><a href="about.html">Обо мне</a></li>
                 <li><a href="contacts.html">Контакты</a></li>
             </ul>
@@ -42,9 +40,26 @@
     <footer>
         <p>© 2024 Мой Блог. Все права защищены.</p>
     </footer>
-
-    <!-- Подключаем скрипт -->
-    <script src="script.js"></script>
+    
+    <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        fetch("articles.json")
+            .then(response => response.json())
+            .then(data => {
+                const articleList = document.createElement("ul");
+                data.forEach(article => {
+                    const listItem = document.createElement("li");
+                    const link = document.createElement("a");
+                    link.href = article.url;
+                    link.textContent = article.title;
+                    listItem.appendChild(link);
+                    articleList.appendChild(listItem);
+                });
+                document.getElementById("main-content").appendChild(articleList);
+            })
+            .catch(error => console.error("Ошибка загрузки статей:", error));
+    });
+</script>
 
 </body>
 </html>

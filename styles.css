@@ -36,6 +36,7 @@ header p {
     max-width: 1000px;
     margin: 20px auto;
     gap: 20px;
+    padding: 0 15px;
 }
 
 /* Стили для основного контента */
@@ -47,6 +48,35 @@ main {
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
+main section h2 {
+    font-size: 1.8em;
+    color: #333;
+    margin-bottom: 15px;
+    border-bottom: 2px solid #007bff;
+    padding-bottom: 5px;
+}
+
+main ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+main ul li {
+    margin-bottom: 10px;
+}
+
+main ul li a {
+    text-decoration: none;
+    color: #007bff;
+    font-weight: bold;
+    transition: color 0.3s;
+}
+
+main ul li a:hover {
+    color: #0056b3;
+}
+
+/* Стили для статей */
 article {
     margin-bottom: 20px;
 }
@@ -79,6 +109,7 @@ aside h3 {
 
 aside ul {
     list-style-type: none;
+    padding: 0;
 }
 
 aside ul li {
@@ -96,7 +127,7 @@ aside ul li a:hover {
     color: #007bff;
 }
 
-/* Стили для разделов (на страницах "Обо мне" и "Контакты") */
+/* Стили для разделов (например, "Обо мне" и "Контакты") */
 section {
     margin-bottom: 20px;
 }
@@ -128,7 +159,7 @@ footer {
         flex-direction: column;
         padding: 10px;
     }
-    
+
     aside {
         margin-top: 20px;
     }

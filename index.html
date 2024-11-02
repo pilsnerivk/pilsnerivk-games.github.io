@@ -4,11 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Мой Блог</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
-    <header>
+    <header id="home">
         <h1>Добро пожаловать в мой блог</h1>
         <p>Здесь я делюсь своими мыслями и идеями</p>
     </header>
@@ -31,13 +31,25 @@
         <aside>
             <h3>Навигация</h3>
             <ul>
-                <li><a href="#">Главная</a></li>
+                <li><a href="#home">Главная</a></li>
                 <li><a href="#" onclick="addArticle()">Добавить статью</a></li>
-                <li><a href="#">Обо мне</a></li>
-                <li><a href="#">Контакты</a></li>
+                <li><a href="#about">Обо мне</a></li>
+                <li><a href="#contacts">Контакты</a></li>
             </ul>
         </aside>
     </div>
+
+    <!-- Раздел "Обо мне" -->
+    <section id="about">
+        <h2>Обо мне</h2>
+        <p>Это раздел обо мне. Здесь можно рассказать о себе и своей работе.</p>
+    </section>
+
+    <!-- Раздел "Контакты" -->
+    <section id="contacts">
+        <h2>Контакты</h2>
+        <p>Вы можете связаться со мной по электронной почте: example@example.com</p>
+    </section>
 
     <footer>
         <p>© 2024 Мой Блог. Все права защищены.</p>

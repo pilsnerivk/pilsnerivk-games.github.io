@@ -1,4 +1,4 @@
-/* Стили для базового блога */
+/* Сброс стилей и общие настройки */
 * {
     margin: 0;
     padding: 0;
@@ -9,8 +9,10 @@ body {
     font-family: Arial, sans-serif;
     background-color: #f4f4f9;
     color: #333;
+    line-height: 1.6;
 }
 
+/* Стили для заголовка */
 header {
     background-color: #333;
     color: #fff;
@@ -18,36 +20,116 @@ header {
     text-align: center;
 }
 
+header h1 {
+    font-size: 2em;
+    margin-bottom: 10px;
+}
+
+header p {
+    font-size: 1.2em;
+}
+
+/* Контейнер для основного контента и боковой панели */
 .container {
     display: flex;
     flex-wrap: wrap;
     max-width: 1000px;
     margin: 20px auto;
+    gap: 20px;
 }
 
+/* Стили для основного контента */
 main {
     flex: 3;
     padding: 20px;
-}
-
-aside {
-    flex: 1;
-    background-color: #f4f4f4;
-    padding: 20px;
+    background-color: #fff;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
 article {
     margin-bottom: 20px;
 }
 
-h2 {
+article h2 {
+    font-size: 1.8em;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+article p {
+    font-size: 1em;
+    color: #555;
+}
+
+/* Стили для боковой панели */
+aside {
+    flex: 1;
+    background-color: #f4f4f4;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+aside h3 {
+    font-size: 1.5em;
+    margin-bottom: 15px;
     color: #333;
 }
 
+aside ul {
+    list-style-type: none;
+}
+
+aside ul li {
+    margin-bottom: 10px;
+}
+
+aside ul li a {
+    text-decoration: none;
+    color: #333;
+    font-weight: bold;
+    transition: color 0.3s;
+}
+
+aside ul li a:hover {
+    color: #007bff;
+}
+
+/* Стили для разделов (на страницах "Обо мне" и "Контакты") */
+section {
+    margin-bottom: 20px;
+}
+
+section h2 {
+    font-size: 1.8em;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+section p {
+    font-size: 1em;
+    color: #555;
+}
+
+/* Стили для нижнего колонтитула (footer) */
 footer {
     background-color: #333;
     color: #fff;
     text-align: center;
     padding: 10px;
     margin-top: 20px;
+    font-size: 0.9em;
+}
+
+/* Адаптивность для мобильных устройств */
+@media (max-width: 768px) {
+    .container {
+        flex-direction: column;
+        padding: 10px;
+    }
+    
+    aside {
+        margin-top: 20px;
+    }
 }

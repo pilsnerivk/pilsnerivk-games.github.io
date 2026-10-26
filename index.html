@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Звери-кликер</title>
+<style>
+:root{--bg:#f3efe6;--card:#fffdf8;--ink:#2b2a26;--mute:#7a766b;--line:#e2dccd;--acc:#e0803a;--acc2:#3a8f5c;--hp:#d9534f;--boss:#8e44ad;--gold:#c9961a;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1c1b19;--card:#27251f;--ink:#f0ece2;--mute:#a09a8a;--line:#3a372f;--acc:#f0924a;--acc2:#58b97c;--gold:#f0c24a}}
+:root[data-theme="dark"]{--bg:#1c1b19;--card:#27251f;--ink:#f0ece2;--mute:#a09a8a;--line:#3a372f;--acc:#f0924a;--acc2:#58b97c;--gold:#f0c24a}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-user-select:none;user-select:none}
+header{display:flex;gap:12px;justify-content:space-between;flex-wrap:wrap;padding:12px 16px;background:var(--card);border-bottom:1px solid var(--line);position:sticky;top:env(safe-area-inset-top,0px);z-index:5}
+.stat b{display:block;font-size:20px}.stat span{font-size:12px;color:var(--mute);text-transform:uppercase;letter-spacing:.04em}
+.gold b{color:var(--gold)}
+.wrap{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;max-width:1000px;margin:0 auto;padding:16px}
+@media(max-width:700px){.wrap{grid-template-columns:1fr}}
+.stage{background:hsl(var(--hue,100) 40% 85%);border:1px solid var(--line);border-radius:16px;padding:16px;text-align:center;position:relative;overflow:hidden;min-height:380px}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .stage{background:hsl(var(--hue,100) 25% 20%)}}
+:root[data-theme="dark"] .stage{background:hsl(var(--hue,100) 25% 20%)}
+.zone{font-size:20px;font-weight:700}.sub{color:var(--mute);font-size:14px}
+.bar{height:16px;border-radius:8px;background:rgba(0,0,0,.18);overflow:hidden;margin:8px 0;position:relative}
+.bar>i{display:block;height:100%;background:var(--hp);width:100%;transition:width .08s}
+.bar.t>i{background:var(--boss)}
+.bar em{position:absolute;inset:0;font:700 11px/16px system-ui;color:#fff;font-style:normal;text-shadow:0 1px 2px #000a}
+#mon{font-size:120px;line-height:1.1;cursor:pointer;background:none;border:0;padding:8px;margin:6px auto;display:block;filter:drop-shadow(0 8px 6px rgba(0,0,0,.3));touch-action:manipulation}
+#mon.boss{font-size:150px}
+#mon.hit{animation:hit .12s}
+@keyframes hit{50%{transform:scale(.9) rotate(-4deg)}}
+.fl{position:absolute;font-weight:800;color:#fff;text-shadow:0 2px 3px #000b;pointer-events:none;animation:up .9s forwards}
+.fl.g{color:#ffd54a}
+@keyframes up{to{transform:translateY(-70px);opacity:0}}
+.toast{position:absolute;left:12px;right:12px;bottom:12px;background:#000c;color:#fff;border-radius:10px;padding:8px;font-size:14px;opacity:0;transition:opacity .3s}
+.toast.on{opacity:1}
+.shop{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:12px}
+.mult{display:flex;gap:6px;margin-bottom:10px}
+.mult button{flex:1;padding:6px;border-radius:8px;border:1px solid var(--line);background:none;color:var(--ink);cursor:pointer;font:inherit}
+.mult button.on{background:var(--acc);border-color:var(--acc);color:#fff}
+.row{display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid var(--line)}
+.row:first-of-type{border-top:0}
+.ic{font-size:34px;width:44px;text-align:center}
+.info{flex:1;min-width:0}.info b{display:block}.info small{color:var(--mute)}
+.buy{min-width:96px;padding:8px 10px;border:0;border-radius:10px;background:var(--acc2);color:#fff;font:600 14px system-ui;cursor:pointer}
+.buy:disabled{background:var(--line);color:var(--mute);cursor:not-allowed}
+.foot{display:flex;gap:8px;justify-content:space-between;margin-top:10px}
+.foot button{background:none;border:1px solid var(--line);color:var(--mute);border-radius:8px;padding:6px 10px;cursor:pointer;font:inherit;font-size:13px}
+</style>
+</head>
+<body>
+<header>
+  <div class="stat gold"><b id="gold">0</b><span>Золото</span></div>
+  <div class="stat"><b id="dps">0</b><span>Урон/сек</span></div>
+  <div class="stat"><b id="cdmg">1</b><span>Урон за клик</span></div>
+</header>
+<div class="wrap">
+  <section class="stage" id="stage">
+    <div class="zone" id="zone"></div>
+    <div class="sub" id="kills"></div>
+    <div id="name" style="margin-top:8px;font-weight:600"></div>
+    <div class="bar"><i id="hp"></i><em id="hptx"></em></div>
+    <div class="bar t" id="tbar" style="display:none"><i id="tm"></i><em id="tmtx"></em></div>
+    <button id="mon" aria-label="Ударить зверя">🐛</button>
+    <div class="sub">Клики по зверю бьют, звери-помощники бьют сами</div>
+    <div class="toast" id="toast"></div>
+  </section>
+  <section class="shop">
+    <div class="mult" id="mult"><button data-n="1" class="on">×1</button><button data-n="10">×10</button><button data-n="100">×100</button></div>
+    <div id="list"></div>
+    <div class="foot"><button id="save">💾 Сохранить</button><button id="reset">Сбросить прогресс</button></div>
+  </section>
+</div>
+<script>
+const HEROES=[
+ {n:"Котёнок",e:"🐱",c:50,d:5},{n:"Щенок",e:"🐶",c:250,d:22},{n:"Кролик",e:"🐰",c:1000,d:80},
+ {n:"Лиса",e:"🦊",c:4000,d:290},{n:"Сова",e:"🦉",c:20000,d:1100},{n:"Медведь",e:"🐻",c:100000,d:4200},
+ {n:"Слон",e:"🐘",c:600000,d:17000},{n:"Дракон",e:"🐉",c:4e6,d:80000}
+];
+const MON=[["Гусеница","🐛"],["Улитка","🐌"],["Крыса","🐀"],["Лягушка","🐸"],["Ящерица","🦎"],["Змея","🐍"],["Волк","🐺"],["Кабан","🐗"],["Олень","🦌"],["Лев","🦁"],["Крокодил","🐊"],["Носорог","🦏"],["Мамонт","🦣"],["Динозавр","🦖"]];
+const R=1.07,KEY="zveriClicker1";
+let S={gold:0,zone:1,kills:0,click:0,h:HEROES.map(()=>0)};
+try{const j=JSON.parse(localStorage.getItem(KEY)||"null");if(j&&j.h&&j.h.length===HEROES.length)S=j}catch(e){}
+let buyN=1,cur=0,max=1,boss=false,timer=30,mi=0,resetArm=false;
+const $=id=>document.getElementById(id);
+const SUF=["","K","M","B","T","Qa","Qi","Sx","Sp","Oc","No"];
+function fmt(n){if(n<1000)return n<10?(Math.round(n*10)/10)+"":Math.floor(n)+"";
+ let i=Math.floor(Math.log10(n)/3);if(i>=SUF.length)return n.toExponential(2).replace("+","");
+ return (n/Math.pow(1000,i)).toFixed(2)+SUF[i]}
+const mult=l=>Math.pow(2,Math.floor(l/25));
+const heroDps=i=>S.h[i]*HEROES[i].d*mult(S.h[i]);
+const totalDps=()=>HEROES.reduce((a,_,i)=>a+heroDps(i),0);
+const clickDmg=()=>(1+S.click)*mult(S.click)+totalDps()*0.05;
+const cost=(c,l,n)=>c*Math.pow(R,l)*(Math.pow(R,n)-1)/(R-1);
+const clickBase=5;
+
+function spawn(){
+ boss=S.zone%5===0;
+ max=cur=10*Math.pow(1.55,S.zone-1)*(boss?10:1);
+ mi=boss?Math.min(MON.length-1,Math.floor(S.zone/5)%MON.length):Math.floor(Math.random()*Math.min(MON.length,2+Math.floor(S.zone/3)));
+ timer=30;
+ const m=$("mon");m.textContent=MON[mi][1];m.className=boss?"boss":"";
+ $("tbar").style.display=boss?"":"none";
+ $("stage").style.setProperty("--hue",(S.zone*23)%360);
+}
+function toast(t){const e=$("toast");e.textContent=t;e.classList.add("on");clearTimeout(toast.t);toast.t=setTimeout(()=>e.classList.remove("on"),2200)}
+function float(txt,x,y,g){const f=document.createElement("span");f.className="fl"+(g?" g":"");f.textContent=txt;
+ f.style.left=x+"px";f.style.top=y+"px";$("stage").appendChild(f);setTimeout(()=>f.remove(),900)}
+function kill(){
+ const g=Math.ceil(max/(boss?30:15)*(0.8+Math.random()*0.4));
+ S.gold+=g;
+ const r=$("mon").getBoundingClientRect(),s=$("stage").getBoundingClientRect();
+ float("+"+fmt(g)+" 🪙",r.left-s.left+r.width/2-30,r.top-s.top+10,true);
+ if(boss){S.zone++;S.kills=0}
+ else{S.kills++;if(S.kills>=10){S.zone++;S.kills=0}}
+ spawn();
+}
+function hurt(d){cur-=d;if(cur<=0)kill()}
+$("mon").addEventListener("pointerdown",e=>{
+ const d=clickDmg();hurt(d);
+ const s=$("stage").getBoundingClientRect();
+ float("-"+fmt(d),e.clientX-s.left-10+(Math.random()*30-15),e.clientY-s.top-20);
+ const m=$("mon");m.classList.remove("hit");void m.offsetWidth;m.classList.add("hit");
+});
+setInterval(()=>{
+ hurt(totalDps()/10);
+ if(boss){timer-=0.1;if(timer<=0){S.zone=Math.max(1,S.zone-1);S.kills=0;toast("Босс победил! Откат на зону "+S.zone);spawn()}}
+ render();
+},100);
+
+// shop
+function row(id,ic,name){const d=document.createElement("div");d.className="row";
+ d.innerHTML=`<div class="ic">${ic}</div><div class="info"><b>${name} <small id="${id}l"></small></b><small id="${id}d"></small></div><button class="buy" id="${id}b"></button>`;
+ $("list").appendChild(d);$(id+"b").onclick=()=>buy(id)}
+row("c","👆","Сильный клик");
+HEROES.forEach((h,i)=>row("h"+i,h.e,h.n));
+function buy(id){
+ const isC=id==="c",i=isC?0:+id.slice(1),l=isC?S.click:S.h[i],base=isC?clickBase:HEROES[i].c;
+ const c=cost(base,l,buyN);if(S.gold<c)return;S.gold-=c;
+ if(isC)S.click+=buyN;else S.h[i]+=buyN;
+}
+document.querySelectorAll("#mult button").forEach(b=>b.onclick=()=>{
+ buyN=+b.dataset.n;document.querySelectorAll("#mult button").forEach(x=>x.classList.toggle("on",x===b))});
+
+function render(){
+ $("gold").textContent=fmt(S.gold);$("dps").textContent=fmt(totalDps());$("cdmg").textContent=fmt(clickDmg());
+ $("zone").textContent="Зона "+S.zone+(boss?" — БОСС 👑":"");
+ $("kills").textContent=boss?"Победи босса за 30 секунд":"Побеждено: "+S.kills+" / 10";
+ $("name").textContent=(boss?"Босс: ":"")+MON[mi][0];
+ const p=Math.max(0,cur/max*100);$("hp").style.width=p+"%";$("hptx").textContent=fmt(Math.max(0,cur))+" / "+fmt(max);
+ if(boss){$("tm").style.width=timer/30*100+"%";$("tmtx").textContent=Math.ceil(timer)+" c"}
+ // click row
+ upd("c",S.click,clickBase,"Урон за клик: "+fmt((1+S.click)*mult(S.click)));
+ HEROES.forEach((h,i)=>upd("h"+i,S.h[i],h.c,S.h[i]?"Урон/сек: "+fmt(heroDps(i)):"Нанять: "+fmt(h.d)+" урона/сек за уровень"));
+}
+function upd(id,l,base,desc){
+ const c=cost(base,l,buyN);
+ $(id+"l").textContent="ур. "+l+(l>=25?" (×"+mult(l)+")":"");
+ $(id+"d").textContent=desc;
+ const b=$(id+"b");b.textContent=(l?"+":"Нанять +")+buyN+" · "+fmt(c)+" 🪙";b.disabled=S.gold<c;
+}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+$("save").onclick=()=>{save();toast("Сохранено ✔")};
+$("reset").onclick=()=>{
+ if(!resetArm){resetArm=true;$("reset").textContent="Точно сбросить? Нажми ещё раз";setTimeout(()=>{resetArm=false;$("reset").textContent="Сбросить прогресс"},3000);return}
+ S={gold:0,zone:1,kills:0,click:0,h:HEROES.map(()=>0)};save();resetArm=false;$("reset").textContent="Сбросить прогресс";spawn();toast("Прогресс сброшен");
+};
+setInterval(save,5000);
+document.addEventListener("visibilitychange",()=>{if(document.hidden)save()});
+spawn();render();
+</script>
+</body>
+</html>
